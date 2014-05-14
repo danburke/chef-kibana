@@ -7,7 +7,7 @@ server {
   location / {
     root  <%= @kibana_dir %>;
     index  index.html  index.htm;
-    <% unless node['kibana']['nginx'][:users].empty? %>
+    <% unless node['kibana']['nginx'].empty? || node['kibana']['nginx'][:users].empty? %>
       # Authorize access
       auth_basic           "ElasticSearch";
       auth_basic_user_file <%= node['kibana']['nginx'][:passwords_file] %>;
