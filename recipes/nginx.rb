@@ -43,5 +43,21 @@ template "/etc/nginx/sites-available/kibana" do
     :es_scheme        => node['kibana']['es_scheme']
   )
 end
+ruby_block "add users to passwords file" do
+  block do
+    require 'webrick/httpauth/htpasswd'
+    @htpasswd = WEBrick::HTTPAuth::Htpasswd.new(node[:kibana][:nginx][:passwords_file])
+
+    node[:kibana][:nginx][:users].each do |u|
+      Chef::Log.debug "Adding user '#{u['username']}' to #{node[:kibana][:nginx][:passwords_file]}\n"
+      @htpasswd.set_passwd( 'Kibana', u['username'], u['password'] )
+    end
+
+    @htpasswd.flush
+  end
+
+  not_if { node[:kibana][:nginx][:users].empty? }
+end
 
 nginx_site "kibana"
+
