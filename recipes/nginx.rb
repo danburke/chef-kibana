@@ -56,8 +56,18 @@ ruby_block "add users to passwords file" do
     @htpasswd.flush
   end
 
+
+
+  not_if { node[:kibana][:nginx][:users].empty? }
+end
+file node[:kibana]['nginx'][:passwords_file] do
+  owner node['nginx']['user']
+  group node['nginx']['group']
+  mode "0600"
+  action :touch
   not_if { node[:kibana][:nginx][:users].empty? }
 end
 
-nginx_site "kibana"
 
+
+nginx_site "kibana"
