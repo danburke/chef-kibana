@@ -22,7 +22,11 @@ node.set['nginx']['default_site_enabled'] = node['kibana']['nginx']['enable_defa
 
 include_recipe "nginx"
 unless node['kibana']['nginx']['enable_default_site'] == true
-  file "/etc/nginx/conf.d/default.conf" do
+  file "/etc/nginx/sites-available/default" do
+      action :delete
+      notifies :reload, "service[nginx]"
+  end
+  file "/etc/nginx/sites-available/000-default" do
       action :delete
       notifies :reload, "service[nginx]"
   end
